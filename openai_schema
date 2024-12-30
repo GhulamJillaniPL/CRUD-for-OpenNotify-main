@@ -1,0 +1,121 @@
+openapi: 3.1.0
+info:
+  title: ISS Tracking API
+  description: API for tracking International Space Station location and astronaut information
+  version: 1.0.0
+servers:
+  - url: https://0b4b-162-12-210-2.ngrok-free.app
+    description: Production server
+paths:
+  /iss-now.json:
+    get:
+      summary: Retrieve current ISS location
+      operationId: getISSLocation
+      responses:
+        "200":
+          description: ISS location retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                      - success
+                  iss_position:
+                    type: object
+                    properties:
+                      latitude:
+                        type: string
+                        pattern: ^-?[0-9]+\.?[0-9]*$
+                        example: "45.12345"
+                      longitude:
+                        type: string
+                        pattern: ^-?[0-9]+\.?[0-9]*$
+                        example: "-75.98765"
+                  timestamp:
+                    type: integer
+                    format: int64
+                    example: 1704587436
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - error
+                  message:
+                    type: string
+  /astros:
+    get:
+      summary: Retrieve current astronauts in space
+      operationId: getAstronauts
+      responses:
+        "200":
+          description: Astronaut information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    enum:
+                      - success
+                  number:
+                    type: integer
+                    description: Number of people currently in space
+                    example: 7
+                  people:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          example: Mark Vande Hei
+                        craft:
+                          type: string
+                          example: ISS
+                required:
+                  - message
+                  - number
+                  - people
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - error
+                  message:
+                    type: string
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - error
+        message:
+          type: string
+      required:
+        - status
+        - message
+tags:
+  - name: ISS
+    description: Operations related to ISS location tracking
+  - name: Astronauts
+    description: Operations related to astronaut information
+security: []
